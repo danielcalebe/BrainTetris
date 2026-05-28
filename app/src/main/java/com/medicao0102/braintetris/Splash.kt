@@ -19,6 +19,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -35,12 +37,19 @@ fun Splash(n: () -> Unit) {
     progress.animateTo(
       1f, tween(3000, 200, LinearEasing)
     )
-   n()
+    n()
   }
   Column(
     Modifier
       .fillMaxSize()
-      .background(MaterialTheme.colorScheme.background),
+      .background(
+        MaterialTheme.colorScheme.background
+//        Brush.verticalGradient(
+//          listOf(
+//          MaterialTheme.colorScheme.primary.copy(progress.value),
+//          MaterialTheme.colorScheme.secondary.copy(progress.value)
+//        ))
+      ),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center
   ) {

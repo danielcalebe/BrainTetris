@@ -111,7 +111,30 @@ fun Jogo(ctx: Context, navController: NavHostController, onMatchSave: (Int) -> U
       val y = currentPiece.y + dy
       board[y][x] = 1
     }
-    val newPiece = randomPiece()
+    var newPiece = randomPiece()
+    val availableShapes = shapes.toMutableList()
+    availableShapes.remove(newPiece.shape)
+
+
+    while (!canMove(newPiece, newPiece.x, newPiece.y) && availableShapes.isNotEmpty()) {
+      val newShape = availableShapes.random()
+      newPiece = newPiece.copy(shape = newShape)
+      availableShapes.remove(newShape)
+    }
+
+
+//    if (!canMove(newPiece, newPiece.x, newPiece.y)) {
+//      availableShapes.addAll(shapes)
+//      while (!canMove(newPiece, newPiece.x, newPiece.y) && availableShapes.isNotEmpty()) {
+//        for (i in 0 until GW) {
+//          val newShape = availableShapes.random()
+//          newPiece = newPiece.copy(shape = newShape)
+//          availableShapes.remove(newShape)
+//          newPiece = newPiece.copy(x = i)
+//        }
+//      }
+//    }
+
     if (!canMove(newPiece, newPiece.x, newPiece.y)) {
 
       gameOver = true
@@ -188,7 +211,7 @@ fun Jogo(ctx: Context, navController: NavHostController, onMatchSave: (Int) -> U
           val z = event.values[2]
 
           if (!gameOver && timer == 0) {
-            if (z < 0f) {
+            if (z < -1f) {
               velocity = 100L
             } else {
               velocity = 500L
@@ -256,12 +279,14 @@ fun Jogo(ctx: Context, navController: NavHostController, onMatchSave: (Int) -> U
                   Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .background(
+                      MaterialTheme.colorScheme.secondary
+                    )
                     .padding(vertical = 8.dp),
                   contentAlignment = Alignment.Center
                 ) {
                   Text(
-                    if (timer == 0) "$score PTS" else timer.toString(),
+                   "$score PTS" ,
                     style = MaterialTheme.typography.titleLarge
                   )
                 }
@@ -304,7 +329,12 @@ fun Jogo(ctx: Context, navController: NavHostController, onMatchSave: (Int) -> U
             Modifier
               .fillMaxWidth()
               .clip(RoundedCornerShape(8.dp))
-              .background(MaterialTheme.colorScheme.secondary)
+              .background(
+                when (timer) {
+                  1, 3 -> MaterialTheme.colorScheme.primary
+                  else -> MaterialTheme.colorScheme.secondary
+                }
+              )
               .padding(vertical = 8.dp),
             contentAlignment = Alignment.Center
           ) {
