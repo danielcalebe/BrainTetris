@@ -188,7 +188,7 @@ fun Jogo(ctx: Context, navController: NavHostController, onMatchSave: (Int) -> U
           val z = event.values[2]
 
           if (!gameOver && timer == 0) {
-            if (z < 3f) {
+            if (z < 0f) {
               velocity = 100L
             } else {
               velocity = 500L
@@ -346,13 +346,18 @@ fun Jogo(ctx: Context, navController: NavHostController, onMatchSave: (Int) -> U
               }
 
             }
-
+            val color = when (currentPiece.shape) {
+              shapes[0], shapes[1] -> Color(0xFFAED6F1)
+              else -> Color(0xFFA2DED0)
+            }
             if (timer == 0)
+
+
               currentPiece.shape.forEach { (dx, dy) ->
                 val x = dx + currentPiece.x
                 val y = dy + currentPiece.y
                 drawRect(
-                  color = Color(0xFFAED6F1), size = Size(cellPx, cellPx), topLeft = Offset(
+                  color = color, size = Size(cellPx, cellPx), topLeft = Offset(
                     x = cellPx * x, y = cellPx * y
                   )
                 )

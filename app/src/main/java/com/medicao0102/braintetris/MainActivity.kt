@@ -1,7 +1,6 @@
 package com.medicao0102.braintetris
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
@@ -74,14 +72,14 @@ class MainActivity : ComponentActivity() {
               sp.edit { putString("ranking", Json.encodeToString(list)) }
             }
 
-            NavHost(navController, "jogo") {
+            NavHost(navController, "splash") {
               composable("splash") {
                 Splash({ navController.navigate("inicial") })
               }
               composable("inicial") {
                 Inicial({
                   sp.edit { putString("username", it) }; navController.navigate("jogo")
-                }, onNavigateToRanking = { navController.navigate("ranking") })
+                }, onNavigateToRanking = { navController.navigate("ranking") }, sessionUsername= sp.getString("username", "")?:"")
               }
 
               composable("jogo") {
@@ -93,6 +91,9 @@ class MainActivity : ComponentActivity() {
                     )
                   )
                 })
+              }
+              composable("ranking") {
+                Ranking(navController, getRanking().sortedBy { it.score }.reversed())
               }
             }
           }

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -27,13 +29,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Inicial(onSaveUserName: (String) -> Unit, onNavigateToRanking: () -> Unit) {
+fun Inicial(
+  onSaveUserName: (String) -> Unit,
+  onNavigateToRanking: () -> Unit,
+  sessionUsername: String
+) {
 
 
-  var username by remember { mutableStateOf("") }
+  var username by remember { mutableStateOf(sessionUsername) }
   var isError by remember { mutableStateOf(false) }
   Column(
     Modifier
@@ -81,8 +88,19 @@ fun Inicial(onSaveUserName: (String) -> Unit, onNavigateToRanking: () -> Unit) {
             onValueChange = { username = it },
             label = { Text("Informe seu nome") },
             modifier = Modifier.fillMaxWidth(),
+            keyboardActions = KeyboardActions(onGo = {
 
-            )
+              if (username.isEmpty()) {
+                isError = true
+              } else {
+                isError = false
+                onSaveUserName(username)
+
+              }
+            }),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go)
+
+          )
           Button(
             onClick = {
               if (username.isEmpty()) {
