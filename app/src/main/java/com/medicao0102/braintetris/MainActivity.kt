@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
@@ -21,6 +22,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.medicao0102.braintetris.ui.theme.BrainTetrisTheme
 import androidx.core.content.edit
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+
+@Serializable
+data class ItemRanking(
+  val username: String,
+  val score: Int
+)
 
 class MainActivity : ComponentActivity() {
   @SuppressLint("SourceLockedOrientationActivity")
@@ -45,9 +55,26 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
             val ctx = LocalContext.current
-            val sp = ctx.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+            val sp = ctx.getSharedPreferences("prefs", MODE_PRIVATE)
 
-            NavHost(navController, "inicial") {
+
+            fun getRanking(): List<ItemRanking> {
+              val string = sp.getString("ranking", "") ?: ""
+              val list = try {
+                Json.decodeFromString<List<ItemRanking>>(string)
+              } catch (e: Exception) {
+                emptyList<ItemRanking>()
+              }
+              return list
+            }
+
+            fun putItemRanking(item: ItemRanking) {
+              val list = getRanking().toMutableList()
+              list.add(item)
+              sp.edit { putString("ranking", Json.encodeToString(list)) }
+            }
+
+            NavHost(navController, "jogo") {
               composable("splash") {
                 Splash({ navController.navigate("inicial") })
               }
@@ -58,7 +85,14 @@ class MainActivity : ComponentActivity() {
               }
 
               composable("jogo") {
-                Jogo()
+                Jogo(ctx, navController, {
+                  putItemRanking(
+                    ItemRanking(
+                      username = sp.getString("username", "Anonimo") ?: "",
+                      score = it
+                    )
+                  )
+                })
               }
             }
           }
